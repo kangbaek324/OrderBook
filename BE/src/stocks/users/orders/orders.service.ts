@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { BuyDto } from './dtos/buy.dto';
 import { SellDto } from './dtos/sell.dto';
@@ -9,15 +9,47 @@ import { GetOrderDto } from './dtos/get-order.dto';
 import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 import { EditDto } from './dtos/edit.dto';
 import { PrismaClient } from '@prisma/client';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class OrdersService {
   constructor(
+    @Inject("ORDER_SERVICE") private client: ClientProxy,
     private readonly prisma: PrismaService,
     private readonly ordersValidation: OrdersValidationService,
     private readonly ordersExecution: OrdersExecutionService,
     private readonly websocket: WebsocketGateway
   ) {}
+
+  async sendMQ(
+    data: BuyDto | SellDto | CancelDto | EditDto,
+    user,
+    type: "buy" | "sell" | "cancell" | "edit"
+  ) {
+    const mqData = {
+      data,
+      type: type,
+      user,
+      timestamp: Number(process.hrtime.bigint()),
+    }
+
+    return await this.client.send("order", mqData);
+  } 
+
+  async sendOrder(mqData) {
+    if (mqData.type === "buy") {
+      return await this.buy(mqData.data, mqData.user);
+    }
+    else if (mqData.type === "sell") {
+      return await this.sell(mqData.data, mqData.user);
+    }
+    else if (mqData.type === "cancell") {
+      return await this.cancel(mqData.data, mqData.user);
+    }
+    else if (mqData.type === "edit") {
+      return await this.edit(mqData.data, mqData.user);
+    }
+  }
 
   async getOrder(query: GetOrderDto, user) {
     const resultMessage = await this.ordersValidation.getOrderValidate(query, user)
