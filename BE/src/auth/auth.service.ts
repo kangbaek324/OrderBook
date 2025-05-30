@@ -11,7 +11,7 @@ const salt = 10;
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly prisma: PrismaService,
+        private readonly prismaService: PrismaService,
         private readonly jwtService: JwtService
     ) {}
 
@@ -24,7 +24,7 @@ export class AuthService {
         }
         try {
             const password = await bcrypt.hash(signupData.password, salt)
-            await this.prisma.users.create({ 
+            await this.prismaService.users.create({ 
                 data : {
                     username : signupData.username,
                     password : password,
@@ -39,7 +39,7 @@ export class AuthService {
 
     async checkUsernameDuplicate(username: string): Promise<Boolean> {
         try {
-            const result = await this.prisma.users.findUnique({
+            const result = await this.prismaService.users.findUnique({
                 where : {  username : username }
             });
             return result ? true : false;
@@ -51,7 +51,7 @@ export class AuthService {
 
     async checkEmailDuplicate(email: string): Promise<Boolean> {
         try {
-            const result = await this.prisma.users.findUnique({
+            const result = await this.prismaService.users.findUnique({
                 where : { email : email }
             });
             return result ? true : false;
@@ -64,7 +64,7 @@ export class AuthService {
     async signin(signinData: SigninDto): Promise<unknown> {
         let findUser;
         try {
-            findUser = await this.prisma.users.findUnique({
+            findUser = await this.prismaService.users.findUnique({
                 where : { username : signinData.username },
             })
         } catch (err) {
@@ -84,29 +84,6 @@ export class AuthService {
             }
         } else {
             throw new BadRequestException("아이디 또는 비밀번호가 잘못되었습니다,");
-        }
-    }
-    
-    async createAccount(user): Promise<unknown> {
-        try {
-            const before_account_number = await this.prisma.accounts.findFirst({
-                orderBy : { created_at: "desc" },
-                select : { account_number: true }
-            });
-            const response = await this.prisma.accounts.create({
-                data : {
-                    user_id : user.id,
-                    account_number : ++before_account_number.account_number,
-                    money : 100000000
-                }
-            });
-            return {
-                account_number : response.account_number,
-                money : response.money.toString()
-            }
-        } catch (err) {
-            console.log(err)
-            throw new InternalServerErrorException("서버에 오류가 발생했습니다")
         }
     }
 }

@@ -63,7 +63,8 @@ model user_stocks {
   stock_id   Int
   number     Int
   can_number Int
-  average    Float @db.Double
+  average    Int
+  total_buy_amount BigInt @default(0)
 
   accounts accounts @relation(fields: [account_id], references: [id])
   stocks stocks @relation(fields: [stock_id], references: [id])
