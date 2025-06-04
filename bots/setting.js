@@ -6,8 +6,8 @@ const config = {
   wsUrl: 'http://localhost:3003/stock', // 웹소켓은 3003 포트 유지
   apiBaseUrl: 'http://localhost:3002', // API 기본 URL은 3000 포트
   apiEndpoints: {
-    buy: '/stock/user/orders/buy',  // 매수 주문 엔드포인트
-    sell: '/stock/user/orders/sell' // 매도 주문 엔드포인트
+    buy: '/stocks/orders/buy',  // 매수 주문 엔드포인트
+    sell: '/stocks/orders/sell' // 매도 주문 엔드포인트
   },
   stockId: 1,
   accounts: {

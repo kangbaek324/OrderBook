@@ -1,0 +1,9 @@
+body {
+    margin: 0;
+}
+
+.super-main {
+    background-color: #ff0000;
+    width: 1000px;
+    height: 100px;
+}

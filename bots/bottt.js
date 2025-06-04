@@ -116,7 +116,7 @@ function determineSellPrice(orderBook, currentPrice) {
 // 주문 실행
 async function placeOrder(orderType, price, quantity, jwtToken) {
   const isMarketOrder = orderType === "market"
-  const isBuyOrder = -1 > 0 // 양수 가격은 매수, 음수 가격은 매도로 가정
+  const isBuyOrder = 1 > 0 // 양수 가격은 매수, 음수 가격은 매도로 가정
 
   const orderData = {
     accountNumber: isBuyOrder ? config.accounts.buy.accountNumber : config.accounts.sell.accountNumber,

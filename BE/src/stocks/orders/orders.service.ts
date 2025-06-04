@@ -120,6 +120,8 @@ export class OrdersService {
   }
 
   async buy(data: BuyDto, user) {
+    let result;
+
     try {
       await this.prisma.$transaction(async (prisma: PrismaClient) => {
         
@@ -163,26 +165,30 @@ export class OrdersService {
             });
           }
           try {
-            const result = await this.ordersExecution.order(prisma, data, submitOrder, "buy");
+            result = await this.ordersExecution.order(prisma, data, submitOrder, "buy");
             if(result) {
               success = true;
               break;
             }
           } catch (error) {
             if (error.code === 'P2034' || error.code === "P2010") {
-                attempt++;
-                console.log(`ErrorCode[${error.code}]Retrying transaction... Attempt ${attempt}`);
-                await new Promise(resolve => setTimeout(resolve, 100));
+              attempt++;
+              console.log(`ErrorCode[${error.code}]Retrying transaction... Attempt ${attempt}`);
+              await new Promise(resolve => setTimeout(resolve, 100));
             } 
             else {
-                console.log(error)
-                throw Error("Internet server Error")
+              console.log(error)
+              throw Error("Internet server Error")
             }
           }
         }
       });
-
+      
       await this.websocket.stockUpdate(data.stockId);
+      if (result[0]) {
+        await this.websocket.accountUpdate(result[0]);
+      }
+      await this.websocket.accountUpdate(result[1]);
     } catch (err) {
       if (err instanceof BadRequestException) {
         throw new BadRequestException(err.message);
@@ -195,6 +201,8 @@ export class OrdersService {
   }
 
   async sell(data: SellDto, user) {
+    let result;
+    
     try {
       await this.prisma.$transaction(async (prisma: PrismaClient) => {
         
@@ -238,7 +246,7 @@ export class OrdersService {
             });
           }
           try {
-            const result = await this.ordersExecution.order(prisma, data, submitOrder, "sell");
+            result = await this.ordersExecution.order(prisma, data, submitOrder, "sell");
             if(result) {
               success = true;
               break;
@@ -258,6 +266,10 @@ export class OrdersService {
       });
 
       await this.websocket.stockUpdate(data.stockId);
+      if (result[0]) {
+        await this.websocket.accountUpdate(result[0]);
+      }
+      await this.websocket.accountUpdate(result[1]);
     } catch (err) {
       if (err instanceof BadRequestException) {
         throw new BadRequestException(err.message);
@@ -284,6 +296,7 @@ export class OrdersService {
         }
       });
       await this.websocket.stockUpdate(result.stock_id);
+      await this.websocket.accountUpdate(result.account_id);
     } catch(err) {
       console.log(err)
       throw new InternalServerErrorException("서버에 오류가 발생했습니다")
@@ -305,28 +318,24 @@ export class OrdersService {
         }
       });
       
-      if (order.trading_type = "sell") {
-        const userStock = await this.prisma.user_stocks.findFirst({
-          where :{
-            stock_id : order.stock_id,
-            account_id : order.account_id
-          }
-        })
+      const userStock = await this.prisma.user_stocks.findFirst({
+        where :{
+          stock_id : order.stock_id,
+          account_id : order.account_id
+        }
+      })
 
-        await this.prisma.user_stocks.update({
-          where : {
-            id : userStock.id
-          },
-          data : {
-            can_number : userStock.can_number + (order.number - order.match_number) 
-          }
-        });
-      }
-      else {
-        console.log("money");
-      }
+      await this.prisma.user_stocks.update({
+        where : {
+          id : userStock.id
+        },
+        data : {
+          can_number : userStock.can_number + (order.number - order.match_number) 
+        }
+      });
 
       await this.websocket.stockUpdate(order.stock_id);
+      await this.websocket.accountUpdate(order.account_id);
     } catch(err) {
       console.log(err)
       throw new InternalServerErrorException("서버에 오류가 발생했습니다");

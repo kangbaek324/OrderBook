@@ -69,29 +69,29 @@ export async function accountUpdate(
         if (!userStocks) {
             await prisma.user_stocks.create({
                 data : {
-                    account_id : account_id,
-                    stock_id : stock_id,
-                    number : number,
-                    can_number : number,
-                    average : buyPrice
+                    account_id: account_id,
+                    stock_id: stock_id,
+                    number: number,
+                    can_number: number,
+                    average: buyPrice, 
+                    total_buy_amount: buyPrice * number
                 }
-            })
+            });
         }
         else {
             await prisma.user_stocks.update({
                 where : { id : userStocks.id },
                    data : {
-                    number : userStocks.number + number,
-                    can_number : userStocks.can_number + number,
-                    average : 
-                    ((userStocks.average *  userStocks.number) + (buyPrice * number)) /
-                    (userStocks.number + number)
+                    number : userStocks.number + BigInt(number),
+                    can_number : userStocks.can_number + BigInt(number),
+                    average: Number((BigInt(userStocks.average) * userStocks.number) + BigInt(buyPrice * number) / (userStocks.number + BigInt(number))),
+                    total_buy_amount: userStocks.total_buy_amount + BigInt(buyPrice * number)
                 }
             });
         }
     }
     else if (type == "decrease") {
-        if (userStocks.number - number == 0) {
+        if (userStocks.number - BigInt(number) == BigInt(0)) {
             await prisma.user_stocks.delete({
                 where : { id : userStocks.id }
             });
@@ -100,7 +100,8 @@ export async function accountUpdate(
             await prisma.user_stocks.update({
                 where : { id: userStocks.id },
                 data : {
-                    number : userStocks.number - number
+                    number : userStocks.number - BigInt(number),
+                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average * number)
                 }
             })
         }
@@ -108,8 +109,9 @@ export async function accountUpdate(
             await prisma.user_stocks.update({
                 where : { id : userStocks.id },
                 data : {
-                    number : userStocks.number - number,
-                    can_number : userStocks.can_number - number
+                    number : userStocks.number - BigInt(number),
+                    can_number : userStocks.can_number - BigInt(number),
+                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average * number)
                 }
             });
         }

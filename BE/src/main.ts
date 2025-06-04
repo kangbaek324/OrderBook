@@ -30,7 +30,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('orderbook')
-    .setDescription('한국거래소 호가창을 기반으로 한 호가창 구현')
+    .setDescription('주식 거래소 구현 프로젝트')
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',
