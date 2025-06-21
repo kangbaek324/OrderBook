@@ -268,10 +268,8 @@ export class OrdersService {
       await this.websocket.stockUpdate(data.stockId);
       if (result[0]) {
         await this.websocket.accountUpdate(result[0]);
-        await this.websocket.orderStatus(result[0]);
       }
       await this.websocket.accountUpdate(result[1]);
-      await this.websocket.orderStatus(result[1]);
     } catch (err) {
       if (err instanceof BadRequestException) {
         throw new BadRequestException(err.message);
@@ -299,7 +297,6 @@ export class OrdersService {
       });
       await this.websocket.stockUpdate(result.stock_id);
       await this.websocket.accountUpdate(result.account_id);
-      await this.websocket.orderStatus(result.account_id);
     } catch(err) {
       console.log(err)
       throw new InternalServerErrorException("서버에 오류가 발생했습니다")
@@ -339,7 +336,6 @@ export class OrdersService {
 
       await this.websocket.stockUpdate(order.stock_id);
       await this.websocket.accountUpdate(order.account_id);
-      await this.websocket.orderStatus(order.account_id);
     } catch(err) {
       console.log(err)
       throw new InternalServerErrorException("서버에 오류가 발생했습니다");

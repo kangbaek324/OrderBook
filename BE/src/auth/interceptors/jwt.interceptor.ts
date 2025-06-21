@@ -9,12 +9,8 @@ export class jwtInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             map((jwt) => {
-                res.cookie('accessToken', jwt, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'Strict',
-                    maxAge: 1000 * 60 * 60 * 24 * 30 // 30일
-                });
+                res.setHeader('Authorization', jwt.accessToken);
+                res.json(jwt)
             })
         )
     }

@@ -7,13 +7,6 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: true,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  });
-
-
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
       options: {
@@ -54,6 +47,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.startAllMicroservices();
-  await app.listen(3000);
+  await app.listen(3002);
 }
 bootstrap();

@@ -14,7 +14,7 @@ export class AuthController {
 
     @ApiOperation({ summary: "회원가입" })
     @ApiResponse({ status: "2XX", description: ""})
-    @Post("/signup")
+    @Post("/sign-up")
     async signup(@Body() data: SignupDto): Promise<void> {
         return this.authService.signup(data);
     }
@@ -25,7 +25,7 @@ export class AuthController {
             "accessToken": "jwt token.."
         }    
     `})
-    @Post("/signin")
+    @Post("/sign-in")
     @UseInterceptors(jwtInterceptor)
     async signin(@Body() data: SigninDto): Promise<unknown> {
         return this.authService.signin(data)
