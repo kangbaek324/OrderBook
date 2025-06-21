@@ -71,10 +71,10 @@ export async function accountUpdate(
                 data : {
                     account_id: account_id,
                     stock_id: stock_id,
-                    number: number,
-                    can_number: number,
+                    number: BigInt(number),
+                    can_number: BigInt(number),
                     average: buyPrice, 
-                    total_buy_amount: buyPrice * number
+                    total_buy_amount: BigInt(buyPrice) * BigInt(number)
                 }
             });
         }
@@ -84,8 +84,12 @@ export async function accountUpdate(
                    data : {
                     number : userStocks.number + BigInt(number),
                     can_number : userStocks.can_number + BigInt(number),
-                    average: Number((BigInt(userStocks.average) * userStocks.number) + BigInt(buyPrice * number) / (userStocks.number + BigInt(number))),
-                    total_buy_amount: userStocks.total_buy_amount + BigInt(buyPrice * number)
+                    average: Number(
+                    ((BigInt(userStocks.average) * userStocks.number) +
+                    (BigInt(buyPrice) * BigInt(number)))
+                    / (userStocks.number + BigInt(number))
+                    ),
+                    total_buy_amount: userStocks.total_buy_amount + BigInt(buyPrice) * BigInt(number)
                 }
             });
         }
@@ -101,7 +105,7 @@ export async function accountUpdate(
                 where : { id: userStocks.id },
                 data : {
                     number : userStocks.number - BigInt(number),
-                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average * number)
+                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average) * BigInt(number)
                 }
             })
         }
@@ -111,7 +115,7 @@ export async function accountUpdate(
                 data : {
                     number : userStocks.number - BigInt(number),
                     can_number : userStocks.can_number - BigInt(number),
-                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average * number)
+                    total_buy_amount: userStocks.total_buy_amount - BigInt(userStocks.average) * BigInt(number)
                 }
             });
         }

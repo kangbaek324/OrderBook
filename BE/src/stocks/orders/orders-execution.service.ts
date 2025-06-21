@@ -220,10 +220,10 @@ export class OrdersExecutionService {
     }
 
     if (!findOrder) {
-        return [null, submitOrder.account_id];
+      return [null, submitOrder.account_id];
     }
     else {
-        return [findOrder.account_id, submitOrder.account_id];
+      return [findOrder.account_id, submitOrder.account_id];
     }
   }
 }
