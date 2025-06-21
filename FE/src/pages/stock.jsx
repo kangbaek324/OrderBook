@@ -1,8 +1,9 @@
-import Account from "../components/Account";
-import OrderBook from "../components/orderbook";
-import OrderComplete from "../components/orderCompleteHistory";
-import OrderHistory from "../components/OrderHistory";
+import My from "../components/My";
+import OrderBook from "../components/Orderbook";
+import OrderBox from "../components/OrderBox";
 import StockList from "../components/stockList";
+import SearchBar from "../components/SearchBar"
+import Header from "../components/Header"
 import './stock.css';
 
 const Stock = () => {
@@ -10,23 +11,27 @@ const Stock = () => {
 
   return (
     <div className="super-main">
-      <div className="search_bar">{/* 검색 바 */}</div>
+      {/* <SearchBar></SearchBar> */}
       <main>
-        <div className="header"></div>
+        <Header></Header>
         <div className="main">
-          <div className="stock_info">
+          <div className="stockInfo">
             <StockList></StockList>
             <OrderBook></OrderBook>
           </div>
-          <div className="my_info">
+          <div className="myInfo">
             <div className="my">
-              <Account></Account>
-              {/* <OrderComplete></OrderComplete>
-                <OrderHistory></OrderHistory> */}
+              <My></My>
             </div>
             <div className="order">
-              <OrderBook></OrderBook>
-              <OrderBook></OrderBook>
+                <OrderBox
+                  optionName1={"BUY"}
+                  optionName2={"SELL"}
+                ></OrderBox>
+                <OrderBox
+                  optionName1={"EDIT"}
+                  optionName2={"CANCEL"}
+                ></OrderBox>
             </div>
           </div>
         </div>

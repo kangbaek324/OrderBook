@@ -522,9 +522,12 @@
       });
 
       socket.on("accountUpdated", (data) => {
-        console.log(data)
         renderAccountTable(data);
       });
+
+      socket.on("myOrderUpdated", (data) => {
+        console.log(data);
+      })
 
       socket.on("error_custom", (data) => {
         console.error("서버 에러 수신:", data.message);

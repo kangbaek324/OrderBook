@@ -23,8 +23,8 @@ const config = {
     },
   },
   orderTypes: ["limit", "market"],
-  maxOrderInterval: 500, // 최대 0.1초 간격으로 주문 실행
-  minOrderInterval: 100, // 최소 0.25초 간격으로 주문 실행
+  maxOrderInterval: 350, // 최대 0.1초 간격으로 주문 실행
+  minOrderInterval: 200, // 최소 0.25초 간격으로 주문 실행
   minQuantity: 1,
   maxQuantity: 100,
   // 호가 간격 감지 설정
